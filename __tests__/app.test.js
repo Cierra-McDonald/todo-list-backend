@@ -100,6 +100,16 @@ describe('app routes', () => {
       expect(data.body[0]).toEqual(dbChore);
     });
 
+    test('getting a chore from user by id', async() => { 
+      const data = await fakeRequest(app)
+        .get('/api/todoList/4')
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(data.body[0]).toEqual(dbChore);  
+    });
+
     test('updating a chore for a given user', async() => { 
       const updatedChore = { 
         todo: 'Feed Jaxon',
@@ -126,9 +136,6 @@ describe('app routes', () => {
 
       expect(finalChoreUpdate.body[0]).toEqual(newUpdatedChore); 
     });
-
-    
-
 
   });
 });
