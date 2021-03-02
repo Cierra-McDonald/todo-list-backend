@@ -62,5 +62,73 @@ describe('app routes', () => {
 
       expect(data.body).toEqual(expectation);
     });
+
+    const chore = { 
+
+      'todo': 'Feed Jaxon',
+      'completed': true,
+    };
+
+    const dbChore = { 
+      ...chore,
+      owner_id: 2,
+      id:4,
+    };
+
+    test('create a new chore', async() => { 
+      const chore = { 
+        'todo': 'Feed Jaxon',
+        'completed': true,
+      };
+      const data = await fakeRequest(app)
+        .post('/api/todoList')
+        .send(chore)
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(data.body[0]).toEqual(dbChore);  
+    });
+
+    test('get a chore for a given user', async() => { 
+      const data = await fakeRequest(app)
+        .get('/api/todoList')
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(data.body[0]).toEqual(dbChore);
+    });
+
+    test('updating a chore for a given user', async() => { 
+      const updatedChore = { 
+        todo: 'Feed Jaxon',
+        completed: false
+      };
+      const newUpdatedChore = { 
+        ...updatedChore,
+        id: 4,
+        owner_id: 2,
+      };
+
+      await fakeRequest(app)
+        .put('/api/todoList/4')
+        .send(newUpdatedChore)
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      const finalChoreUpdate = await fakeRequest(app)
+        .get('/api/todoList/4')
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(finalChoreUpdate.body[0]).toEqual(newUpdatedChore); 
+    });
+
+    
+
+
   });
 });
